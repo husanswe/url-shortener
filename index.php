@@ -26,8 +26,8 @@
         }
 
         if (empty($errors)) {
-        // 1. Bu URL oldin saqlanganmi? Tekshir
-        $stmt = $pdo->prepare("SELECT short_url FROM urls WHERE long_url = ? LIMIT 1");
+        // 1. Bu URL oldin saqlanganmi? Tekshirish kerak
+        $stmt = $pdo->prepare("SELECT short_url FROM short_urls WHERE long_url = ? LIMIT 1");
         $stmt->execute([$long_url]);
         $existing = $stmt->fetch();
 
@@ -37,12 +37,12 @@
         } else {
             // Yangi short code yarat
             do {
-                // 7 belgili URL-safe kod (taxminan 3.5 trillion kombinatsiya)
+                // 7 belgili URL-safe kod
                 $short_url = substr(bin2hex(random_bytes(4)), 0, 7);
             } while (true); // collision ni tekshirishni keyin qo‘shasan
 
             // DB ga saqlash
-            $stmt = $pdo->prepare("INSERT INTO urls (long_url, short_url, created_at) VALUES (?, ?, NOW())");
+            $stmt = $pdo->prepare("INSERT INTO short_urls (long_url, short_url, created_date) VALUES (?, ?, NOW())");
             $stmt->execute([$long_url, $short_url]);
         }
 
