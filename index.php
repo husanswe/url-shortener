@@ -1,7 +1,6 @@
 <?php 
 
     session_start();
-
     require_once 'config.php';
 
     $errors = [];
@@ -27,12 +26,49 @@
         }
 
         if (empty($errors)) {
-            $_SESSION['short_url'] = $long_url;
-            $_SESSION['success'] = true;
+        // 1. Bu URL oldin saqlanganmi? Tekshir
+        $stmt = $pdo->prepare("SELECT short_url FROM urls WHERE long_url = ? LIMIT 1");
+        $stmt->execute([$long_url]);
+        $existing = $stmt->fetch();
+
+        if ($existing) {
+            // Oldin bor — o‘sha short code ni qaytar
+            $short_url = $existing['short_url'];
+        } else {
+            // Yangi short code yarat
+            do {
+                // 7 belgili URL-safe kod (taxminan 3.5 trillion kombinatsiya)
+                $short_url = substr(bin2hex(random_bytes(4)), 0, 7);
+            } while (true); // collision ni tekshirishni keyin qo‘shasan
+
+            // DB ga saqlash
+            $stmt = $pdo->prepare("INSERT INTO urls (long_url, short_url, created_at) VALUES (?, ?, NOW())");
+            $stmt->execute([$long_url, $short_url]);
+        }
+
+        // Domenni dinamik olish
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+        $domain = $_SERVER['HTTP_HOST'];
+        $short_url = $protocol . $domain . '/' . $short_url;
+
+        // Faqat bir marta ko‘rsatish uchun — session ga saqlaymiz
+        $_SESSION['short_url_once'] = $short_url;
         } else {
             $_SESSION['errors'] = $errors;
         }
-    }
+}
+
+// Xato va natijani faqat bir marta chiqarish
+if (!empty($_SESSION['errors'])) {
+    $errors = $_SESSION['errors'];
+    unset($_SESSION['errors']);
+}
+
+if (!empty($_SESSION['short_url_once'])) {
+    $success_message = $_SESSION['short_url_once'];
+    unset($_SESSION['short_url_once']); // Refreshda yo‘qoladi!
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +114,7 @@
                                 </div>
                             </form>
 
-                            <!-- Muvaffaqiyatli natija chiqsa shu yerda ko‘rsatiladi (keyin JS yoki PHP echo bilan) -->
+                            <!-- Result -->
                             <div id="result" class="mt-4 text-center">
                                 <?php if (!empty($_SESSION['errors'])): ?>
                                     <div class="alert alert-danger mt-4">
@@ -107,6 +143,15 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert("Copied!");
+                });
+            }
+        </script>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
