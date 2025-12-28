@@ -52,7 +52,7 @@
         // Domenni dinamik olish
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
         $domain = $_SERVER['HTTP_HOST'];
-        $short_url = $protocol . $domain . '/' . $short_url;
+        $short_url = $protocol . $domain . '/redirect.php?code=' . $short_url;
 
         // Faqat bir marta ko‘rsatish uchun — session ga saqlaymiz
         $_SESSION['short_url_once'] = $short_url;
