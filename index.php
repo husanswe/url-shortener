@@ -122,7 +122,33 @@ if (!empty($_SESSION['short_url_once'])) {
                                 <?php if (!empty($_SESSION['errors'])): ?>
                                     <div class="alert alert-danger mt-4">
                                         <?php foreach ($_SESSION['errors'] as $error): ?>
-                                            <p><?= htmlspecialchars($error) ?></p>
+                                            <div class="mt-4">
+                                            <?php if (isset($_SESSION['error'])): ?>
+                                                <div class="alert alert-danger alert-dismissible fade show">
+                                                    <?= htmlspecialchars($_SESSION['error']) ?>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                </div>
+                                                <?php unset($_SESSION['error']); ?>
+                                            <?php endif; ?>
+
+                                            <?php if (isset($_SESSION['success'])): ?>
+                                                <div class="alert alert-success alert-dismissible fade show text-center">
+                                                    <h4 class="alert-heading">Qisqa havola tayyor!</h4>
+                                                    <p class="mb-3">
+                                                        <big>
+                                                            <a href="<?= htmlspecialchars($_SESSION['success']) ?>" target="_blank">
+                                                                <?= htmlspecialchars($_SESSION['success']) ?>
+                                                            </a>
+                                                        </big>
+                                                    </p>
+                                                    <button class="btn btn-outline-success btn-sm" onclick="copyToClipboard('<?= htmlspecialchars($_SESSION['success']) ?>')">
+                                                        Nusxa olish
+                                                    </button>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                </div>
+                                                <?php unset($_SESSION['success']); ?>  <!-- Bir marta ko‘rsatib o‘chiramiz -->
+                                            <?php endif; ?>
+                                        </div>
                                         <?php endforeach; ?>
                                     </div>
                                     <?php unset($_SESSION['errors']); ?>
