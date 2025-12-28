@@ -105,17 +105,38 @@ if (!empty($_SESSION['short_url_once'])) {
                                     <input 
                                         type="url" 
                                         name="url" 
-                                        class="form-control form-control-lg" 
+                                        class="form-control form-control-lg <?= !empty($errors) ? 'is-invalid' : '' ?>"
                                         placeholder="Enter the link here" 
+                                        value="<?= htmlspecialchars($_POST['url'] ?? '') ?>"
                                         required
                                         autocomplete="off">
+                                    <?php if (!empty($errors)): ?>
+                                        <div class="invalid-feedback d-block">
+                                    <?= htmlspecialchars($errors[0]) ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="col-12 col-md-4">
-                                    <button type="submit" class="btn btn-primary btn-lg w-100 btn-shorten">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
                                         Shorten
                                     </button>
                                 </div>
                             </form>
+
+                            <?php if (!empty($success_message)): ?>
+                                <div class="alert alert-success alert-dismissible fade show mt-4 text-center">
+                                    <h4 class="alert-heading">Short link ready!</h4>
+                                    <p class="mb-3">
+                                        <a href="<?= htmlspecialchars($success_message) ?>" target="_blank">
+                                            <?= htmlspecialchars($success_message) ?>   
+                                        </a>
+                                    </p>
+                                    <button class="btn btn-outline-success btn-sm" onclick="copyToClipboard('<?= htmlspecialchars($success_message) ?>')">
+                                        Copy
+                                    </button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            <?php endif; ?>
 
                             <!-- Result -->
                             <div id="result" class="mt-4 text-center">
