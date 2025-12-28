@@ -12,7 +12,7 @@
         if ($row) {
             // Clicks ni +1 qilish (statistika uchun)
             $stmt = $pdo->prepare("UPDATE urls SET clicks = clicks + 1 WHERE short_url = ?");
-            $stmt->execute([$short_code]);
+            $stmt->execute([$short_url]);
 
             // Redirect qilish (301 permanent uchun)
             header("Location: " . $row['long_url'], true, 301);
@@ -25,7 +25,7 @@
         }
     } else {
         // Code yo‘q — index.php ga qayt
-        // header("Location: index.php");
+        header("Location: index.php");
         exit;
     }
 ?>
