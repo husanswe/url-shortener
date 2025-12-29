@@ -1,8 +1,0 @@
-RewriteEngine On
-
-# index.php, redirect.php, shorten.php, config.php, css/style.css va boshqa real fayllarni ishlatish uchun
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# Har qanday /abc123 ni redirect.php?code=abc123 ga yubor
-RewriteRule ^([a-zA-Z0-9]+)$ redirect.php?code=$1 [L,QSA]
