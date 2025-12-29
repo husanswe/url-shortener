@@ -59,6 +59,8 @@
         } else {
             $_SESSION['errors'] = $errors;
         }
+        header("Location: index.php");
+        exit;
 }
 
 // Xato va natijani faqat bir marta chiqarish
@@ -70,6 +72,7 @@ if (!empty($_SESSION['errors'])) {
 if (!empty($_SESSION['short_url_once'])) {
     $success_message = $_SESSION['short_url_once'];
     unset($_SESSION['short_url_once']); // Refreshda yo‘qoladi!
+    
 }
 
 ?>
@@ -107,7 +110,7 @@ if (!empty($_SESSION['short_url_once'])) {
                                         name="url" 
                                         class="form-control form-control-lg <?= !empty($errors) ? 'is-invalid' : '' ?>"
                                         placeholder="Enter the link here" 
-                                        value="<?= htmlspecialchars($_POST['url'] ?? '') ?>"
+                                        value="<?= !empty($errors) ? htmlspecialchars($_POST['url'] ?? '') : '' ?>"
                                         required
                                         autocomplete="off">
                                     <?php if (!empty($errors)): ?>
